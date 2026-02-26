@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>麻将不要做挑战</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #006633; color: white; padding: 20px; }
+        .card { background: white; color: #333; border-radius: 15px; padding: 20px; margin: 10px; min-height: 100px; display: flex; flex-direction: column; justify-content: center; }
+        button { background: #ffcc00; border: none; padding: 15px 30px; font-size: 18px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        .player-label { font-size: 1.2em; margin-bottom: 5px; color: #ffcc00; }
+    </style>
+</head>
+<body>
+    <h1>🀄️ 麻将不要做挑战</h1>
+    <div id="display">点击下方按钮开始抽取</div>
+    <button onclick="draw()">全员随机抽取</button>
+
+    <script>
+        // 这里直接嵌入你 data.json 里的数据
+        const data = {
+            conditions: ["有人说“听牌”", "有人笑", "有人打出万", "有人站起来"], // 简化版，可自行扩充
+            punishments: ["扇自己巴掌", "学狗叫", "喝一大口水", "做三个深蹲"]
+        };
+
+        function draw() {
+            let conds = [...data.conditions];
+            let puns = [...data.punishments];
+            let html = "";
+            
+            for(let i=1; i<=4; i++) {
+                let c = conds.splice(Math.floor(Math.random()*conds.length), 1)[0] || "无";
+                let p = puns.splice(Math.floor(Math.random()*puns.length), 1)[0] || "无";
+                html += `<div class="card">
+                            <div class="player-label">玩家 ${i}</div>
+                            <div><b>禁忌：</b>${c}</div>
+                            <div><b>惩罚：</b>${p}</div>
+                         </div>`;
+            }
+            document.getElementById('display').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
