@@ -15,16 +15,18 @@
         body { 
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
             text-align: center; 
-            /* 背景图：叠加 60% 透明度黑色遮罩 */
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                         url('./bg.jpg') no-repeat center center fixed; 
             background-size: cover; 
             color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
             overflow-x: hidden;
+            /* 禁止手机端长按弹出菜单，更像游戏 */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
         }
 
         h1 { color: var(--mj-gold); text-shadow: 2px 2px 8px #000; margin-top: 30px; font-size: 1.8rem; }
-        .desc { font-size: 0.9rem; margin-bottom: 30px; opacity: 0.9; }
+        .desc { font-size: 0.9rem; margin-bottom: 30px; opacity: 0.8; }
 
         .grid { 
             display: grid; 
@@ -34,7 +36,6 @@
             margin: 0 auto; 
         }
         
-        /* 增加视角深度，适配长款比例 */
         .card-container { 
             perspective: 1200px; 
             -webkit-perspective: 1200px; 
@@ -46,10 +47,9 @@
             position: relative; 
             transform-style: preserve-3d; 
             -webkit-transform-style: preserve-3d;
+            /* 翻转速度设为0.6秒，手感最自然 */
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
         }
         .card.flipped { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); }
 
@@ -59,15 +59,14 @@
             backface-visibility: hidden; 
             border-radius: 20px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6); 
             box-sizing: border-box; padding: 15px;
             border: 6px solid var(--mj-border); 
-            /* 强制开启 GPU 加速防止闪烁 */
             -webkit-transform: translate3d(0,0,0);
             transform: translate3d(0,0,0);
         }
         
-        /* 玩家颜色配置 */
+        /* 玩家背面配色 */
         .p1-back { background-color: #ff9a30; color: #8e190f; }
         .p2-back { background-color: #970037; color: #f4cd87; }
         .p3-back { background-color: #FFF8E7; color: #481c17; }
@@ -75,24 +74,23 @@
 
         .char-icon {
             width: 110px; height: 110px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             background-color: transparent; 
-            /* 初始状态防止闪烁 */
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
+            -webkit-transform: translateZ(1px); /* 让图标稍微浮起，解决层级闪烁 */
+            transform: translateZ(1px);
             animation: float 2.5s ease-in-out infinite;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            0%, 100% { transform: translateY(0px) translateZ(1px); }
+            50% { transform: translateY(-15px) translateZ(1px); }
         }
 
         .card-back { z-index: 2; transform: rotateY(0deg); }
-        .card-back span { font-weight: bold; font-size: 1.4rem; letter-spacing: 1px; }
+        .card-back span { font-weight: bold; font-size: 1.4rem; letter-spacing: 2px; }
 
         .card-front { 
             background: var(--mj-ivory); 
@@ -104,14 +102,14 @@
         }
         
         .player-num-tag { 
-            position: absolute; top: 10px; left: 10px; 
+            position: absolute; top: 12px; left: 12px; 
             background: #333; color: white; 
-            font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; 
+            font-size: 0.7rem; padding: 3px 10px; border-radius: 6px; 
         }
         
         .topic-box { width: 100%; padding: 5px 0; }
-        .label { font-size: 0.8rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; }
-        .content-text { font-size: 1.05rem; color: #2c3e50; font-weight: 800; line-height: 1.4; padding: 0 5px; }
+        .label { font-size: 0.8rem; color: #7f8c8d; font-weight: bold; margin-bottom: 4px; }
+        .content-text { font-size: 1.1rem; color: #2c3e50; font-weight: 900; line-height: 1.4; padding: 0 5px; }
         .punish-text { color: var(--mj-red); border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 10px; }
 
         button { 
@@ -119,21 +117,21 @@
             padding: 16px 60px; font-size: 1.2rem; border-radius: 40px; cursor: pointer; 
             font-weight: bold; margin-top: 40px; 
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-            transition: transform 0.2s;
+            transition: all 0.2s;
             -webkit-tap-highlight-color: transparent;
         }
-        button:active { transform: scale(0.95); }
-        #status { margin-top: 20px; font-size: 0.7rem; opacity: 0.6; }
+        button:active { transform: scale(0.92); opacity: 0.9; }
+        #status { margin-top: 20px; font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
     <h1>麻将不要做</h1>
-    <p class="desc">点击翻开查看你的任务</p >
+    <p class="desc">点击任意牌翻开或扣盖</p>
 
     <div class="grid" id="gameBoard"></div>
     <button onclick="shuffle()">重新洗牌</button>
-    <div id="status">连接中...</div>
+    <div id="status">数据同步中...</div>
 
     <script>
         let gameData = { conditions: [], punishments: [] };
@@ -144,10 +142,10 @@
                 const json = await res.json();
                 gameData.conditions = json.data.conditions;
                 gameData.punishments = json.data.punishments;
-                document.getElementById('status').innerText = "✅ 题库同步成功";
+                document.getElementById('status').innerText = "✅ 挑战已准备就绪";
                 shuffle();
             } catch (e) {
-                document.getElementById('status').innerText = "❌ 题库连接失败";
+                document.getElementById('status').innerText = "❌ 题库连接失败，请检查路径";
             }
         }
 
@@ -164,15 +162,18 @@
                 const card = document.createElement('div');
                 card.className = "card";
                 
-                // 点击翻转逻辑，增加动画暂停解决闪烁
+                // 核心翻牌逻辑：支持正反无限翻转
                 card.onclick = function() { 
-                    this.classList.toggle('flipped'); 
+                    const isFlipped = this.classList.toggle('flipped'); 
                     const icon = this.querySelector('.char-icon');
-                    if (this.classList.contains('flipped')) {
-                        // 翻到正面时暂停动画，减少重绘压力
-                        setTimeout(() => { icon.style.animationPlayState = 'paused'; }, 300);
+                    
+                    // 翻到正面（文字）时暂停动画以提升手机流畅度
+                    // 翻回背面（角色）时重新启动动画
+                    if (isFlipped) {
+                        setTimeout(() => { 
+                            if(this.classList.contains('flipped')) icon.style.animationPlayState = 'paused'; 
+                        }, 500);
                     } else {
-                        // 翻回背面时启动动画
                         icon.style.animationPlayState = 'running';
                     }
                 };
