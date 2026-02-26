@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🀄️ 麻将不要做挑战</title>
-        <style>
+    <style>
         :root {
             --mj-gold: #ffcc00;
             --mj-ivory: #fdfaf2;
@@ -15,12 +15,16 @@
         body { 
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
             text-align: center; 
-            /* 背景图：叠加了 60% 透明度的黑色遮罩，让画面变暗 */
+            /* 背景图：叠加 60% 透明度黑色遮罩 */
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                         url('./bg.jpg') no-repeat center center fixed; 
             background-size: cover; 
             color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
+            overflow-x: hidden;
         }
+
+        h1 { color: var(--mj-gold); text-shadow: 2px 2px 8px #000; margin-top: 30px; font-size: 1.8rem; }
+        .desc { font-size: 0.9rem; margin-bottom: 30px; opacity: 0.9; }
 
         .grid { 
             display: grid; 
@@ -30,11 +34,11 @@
             margin: 0 auto; 
         }
         
-        /* 增加视角深度，解决 Safari 兼容性 */
+        /* 增加视角深度，适配长款比例 */
         .card-container { 
             perspective: 1200px; 
             -webkit-perspective: 1200px; 
-            height: 280px; /* 增加高度，更修长 */
+            height: 280px; 
         }
         
         .card { 
@@ -43,21 +47,27 @@
             transform-style: preserve-3d; 
             -webkit-transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-            cursor: pointer; 
+            cursor: pointer;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
-        .card.flipped { transform: rotateY(180deg); }
+        .card.flipped { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); }
 
         .card-face { 
             position: absolute; width: 100%; height: 100%; 
+            -webkit-backface-visibility: hidden; 
             backface-visibility: hidden; 
-            -webkit-backface-visibility: hidden;
             border-radius: 20px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5); box-sizing: border-box; padding: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); 
+            box-sizing: border-box; padding: 15px;
             border: 6px solid var(--mj-border); 
+            /* 强制开启 GPU 加速防止闪烁 */
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
         }
         
-        /* --- 玩家颜色配置 --- */
+        /* 玩家颜色配置 */
         .p1-back { background-color: #ff9a30; color: #8e190f; }
         .p2-back { background-color: #970037; color: #f4cd87; }
         .p3-back { background-color: #FFF8E7; color: #481c17; }
@@ -70,13 +80,9 @@
             background-repeat: no-repeat;
             background-position: center;
             background-color: transparent; 
-            
-            /* --- 核心：解决手机端翻牌闪烁 --- */
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-transform: translateZ(0); 
+            /* 初始状态防止闪烁 */
+            -webkit-transform: translateZ(0);
             transform: translateZ(0);
-            
             animation: float 2.5s ease-in-out infinite;
         }
 
@@ -85,12 +91,15 @@
             50% { transform: translateY(-15px); }
         }
 
+        .card-back { z-index: 2; transform: rotateY(0deg); }
         .card-back span { font-weight: bold; font-size: 1.4rem; letter-spacing: 1px; }
 
         .card-front { 
             background: var(--mj-ivory); 
             color: #333; 
+            z-index: 1;
             transform: rotateY(180deg); 
+            -webkit-transform: rotateY(180deg);
             justify-content: space-evenly; 
         }
         
@@ -103,7 +112,7 @@
         .topic-box { width: 100%; padding: 5px 0; }
         .label { font-size: 0.8rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; }
         .content-text { font-size: 1.05rem; color: #2c3e50; font-weight: 800; line-height: 1.4; padding: 0 5px; }
-        .punish-text { color: var(--mj-red); border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 10px; }
+        .punish-text { color: var(--mj-red); border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 10px; }
 
         button { 
             background: linear-gradient(135deg, #e67e22, #d35400); color: white; border: none; 
@@ -111,6 +120,7 @@
             font-weight: bold; margin-top: 40px; 
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
             transition: transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
         button:active { transform: scale(0.95); }
         #status { margin-top: 20px; font-size: 0.7rem; opacity: 0.6; }
@@ -118,12 +128,12 @@
 </head>
 <body>
 
-    <h1 style="color: var(--mj-gold); text-shadow: 2px 2px 8px #000; margin-top: 30px;">麻将不要做</h1>
-    <p style="font-size: 0.9rem; margin-bottom: 30px; opacity: 0.9;">点击翻牌查看挑战内容</p>
+    <h1>麻将不要做</h1>
+    <p class="desc">点击翻开查看你的任务</p >
 
     <div class="grid" id="gameBoard"></div>
     <button onclick="shuffle()">重新洗牌</button>
-    <div id="status" style="margin-top: 20px; font-size: 0.7rem; opacity: 0.6;">数据已加密同步</div>
+    <div id="status">连接中...</div>
 
     <script>
         let gameData = { conditions: [], punishments: [] };
@@ -134,10 +144,10 @@
                 const json = await res.json();
                 gameData.conditions = json.data.conditions;
                 gameData.punishments = json.data.punishments;
-                document.getElementById('status').innerText = "✅ 题库加载完毕";
+                document.getElementById('status').innerText = "✅ 题库同步成功";
                 shuffle();
             } catch (e) {
-                document.getElementById('status').innerText = "❌ 资源加载失败";
+                document.getElementById('status').innerText = "❌ 题库连接失败";
             }
         }
 
@@ -153,7 +163,19 @@
                 container.className = "card-container";
                 const card = document.createElement('div');
                 card.className = "card";
-                card.onclick = function() { this.classList.toggle('flipped'); };
+                
+                // 点击翻转逻辑，增加动画暂停解决闪烁
+                card.onclick = function() { 
+                    this.classList.toggle('flipped'); 
+                    const icon = this.querySelector('.char-icon');
+                    if (this.classList.contains('flipped')) {
+                        // 翻到正面时暂停动画，减少重绘压力
+                        setTimeout(() => { icon.style.animationPlayState = 'paused'; }, 300);
+                    } else {
+                        // 翻回背面时启动动画
+                        icon.style.animationPlayState = 'running';
+                    }
+                };
                 
                 card.innerHTML = `
                     <div class="card-face card-back p${i}-back">
