@@ -9,7 +9,7 @@
             --mj-gold: #ffcc00;
             --mj-ivory: #fdfaf2;
             --mj-red: #d32f2f;
-            --mj-border: #eb7a42; /* 统一边框色 */
+            --mj-border: #eb7a42; 
         }
         
         body { 
@@ -17,103 +17,68 @@
             text-align: center; 
             background: url('./bg.jpg') no-repeat center center fixed; 
             background-size: cover; 
-            color: white; 
-            margin: 0;
-            padding: env(safe-area-inset-top) 15px 40px 15px;
+            color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
         }
 
-        h1 { font-size: 1.8rem; margin: 20px 0 5px; color: var(--mj-gold); text-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
-        .desc { font-size: 0.8rem; color: white; margin-bottom: 25px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
-
-        .grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            max-width: 450px; 
-            margin: 0 auto; 
-        }
-
-        .card-container { perspective: 1000px; height: 200px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 450px; margin: 0 auto; }
+        .card-container { perspective: 1000px; height: 210px; }
         .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
         .card.flipped { transform: rotateY(180deg); }
 
         .card-face { 
-            position: absolute; 
-            width: 100%; height: 100%; 
-            backface-visibility: hidden; 
-            -webkit-backface-visibility: hidden;
-            border-radius: 15px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.4); 
-            box-sizing: border-box; 
-            padding: 10px;
-            border: 5px solid var(--mj-border); /* 加粗边框 */
+            position: absolute; width: 100%; height: 100%; 
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            border-radius: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4); box-sizing: border-box; padding: 10px;
+            border: 6px solid var(--mj-border); /* 粗边框 */
         }
         
-        /* --- 卡片背面各玩家样式 --- */
-        /* 玩家1 */
+        /* 玩家颜色配置 */
         .p1-back { background-color: #f7b4f3; color: #ae2cef; }
-        /* 玩家2 */
         .p2-back { background-color: #970037; color: #f4cd87; }
-        /* 玩家3 */
         .p3-back { background-color: #FFF8E7; color: #481c17; }
-        /* 玩家4 */
         .p4-back { background-color: #481c17; color: #FFF8E7; }
 
-        /* 图标样式与上下跳动动画 */
         .char-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            background-size: cover;
+            width: 100px; height: 100px; /* 调大一点点 */
+            margin-bottom: 5px;
+            background-size: contain;
+            background-repeat: no-repeat;
             background-position: center;
-            animation: float 2s ease-in-out infinite; /* 规律跳动 */
+            background-color: transparent; /* 确保完全透明 */
+            animation: float 2s ease-in-out infinite;
         }
 
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
         }
 
-        .card-back span { font-weight: bold; font-size: 1.1rem; }
+        .card-back span { font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
 
-        /* --- 卡片正面 --- */
-        .card-front { 
-            background: var(--mj-ivory); 
-            color: #333; 
-            transform: rotateY(180deg); 
-        }
-
-        .player-num-tag { 
-            position: absolute; top: 8px; left: 8px; 
-            background: #333; color: white; 
-            font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; 
-        }
-
+        .card-front { background: var(--mj-ivory); color: #333; transform: rotateY(180deg); }
+        .player-num-tag { position: absolute; top: 8px; left: 8px; background: #333; color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
         .topic-box { margin-bottom: 5px; width: 100%; }
         .label { font-size: 0.7rem; color: #7f8c8d; font-weight: bold; }
-        .content-text { font-size: 0.9rem; color: #2c3e50; font-weight: 800; }
+        .content-text { font-size: 0.95rem; color: #2c3e50; font-weight: 800; line-height: 1.2; }
         .punish-text { color: var(--mj-red); }
 
         button { 
             background: linear-gradient(135deg, #e67e22, #d35400); color: white; border: none; 
             padding: 14px 45px; font-size: 1.1rem; border-radius: 30px; cursor: pointer; 
             font-weight: bold; margin-top: 30px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        
-        #status { font-size: 0.7rem; margin-top: 15px; color: white; }
     </style>
 </head>
 <body>
 
-    <h1>麻将不要做</h1>
-    <p class="desc">点击查看你的秘密挑战</p>
+    <h1 style="color: var(--mj-gold); text-shadow: 2px 2px 5px #000; margin-bottom: 5px;">麻将不要做</h1>
+    <p style="font-size: 0.8rem; margin-bottom: 25px;">点击翻开你的挑战</p>
 
     <div class="grid" id="gameBoard"></div>
     <button onclick="shuffle()">重新洗牌</button>
-    <div id="status">加载中...</div>
+    <div id="status" style="margin-top: 15px; font-size: 0.7rem; opacity: 0.8;">数据同步中...</div>
 
     <script>
         let gameData = { conditions: [], punishments: [] };
@@ -124,10 +89,10 @@
                 const json = await res.json();
                 gameData.conditions = json.data.conditions;
                 gameData.punishments = json.data.punishments;
-                document.getElementById('status').innerText = "✅ 题库同步成功";
+                document.getElementById('status').innerText = "✅ 已就绪";
                 shuffle();
             } catch (e) {
-                document.getElementById('status').innerText = "❌ 题库加载失败";
+                document.getElementById('status').innerText = "❌ 请检查数据源";
             }
         }
 
@@ -145,8 +110,8 @@
                 card.className = "card";
                 card.onclick = function() { this.classList.toggle('flipped'); };
                 
-                // 动态图片路径
-                const charImg = `./character${i}.jpg`;
+                // 这里后缀改成了 .png
+                const charImg = `./character${i}.png`;
                 
                 card.innerHTML = `
                     <div class="card-face card-back p${i}-back">
