@@ -76,19 +76,9 @@
             /* 使用你指定的图片 */
             background: #2c3e50 url('./cardback.jpg') no-repeat center center; 
             background-size: cover; 
-            border: 2px solid var(--mj-gold); 
-            color: var(--mj-gold); 
+            border: 3px solid #8b0000; 
+            color: #8b0000; 
             z-index: 2;
-        }
-
-        /* 遮罩层，确保能看清“玩家X”字样 */
-        .card-back::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.4); 
-            border-radius: 10px;
-            z-index: 0;
         }
 
         .card-back span { 
