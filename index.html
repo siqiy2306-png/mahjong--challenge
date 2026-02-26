@@ -67,12 +67,36 @@
         
         /* 背面 */
         .card-back { 
-            background: #2c3e50; 
-            border: 3px solid var(--mj-gold); 
+             /* 替换为你上传的卡片背面图片名 */
+            background: url('./card_back.jpg') no-repeat center center; 
+            background-size: cover; 
+            border: 2px solid var(--mj-gold); 
             color: var(--mj-gold); 
+            position: relative;
         }
-        .card-back::before { content: "🀄"; font-size: 3rem; margin-bottom: 5px; }
 
+ /* 给背面加一层微弱的暗色遮罩，确保“玩家1”等字样能看清 */
+        .card-back::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.2); 
+            border-radius: 10px;
+            z-index: 0;
+        }
+
+        /* 调整背面文字层级，防止被背景盖住 */
+        .card-back span { 
+            position: relative;
+            z-index: 1;
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* 如果不需要那个大大的🀄图标，可以把下面这段删掉或注释掉 */
+        /* .card-back::after { content: "🀄"; font-size: 3rem; ... } */
+        
         /* 正面 */
         .card-front { 
             background: var(--mj-ivory); 
