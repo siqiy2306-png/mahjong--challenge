@@ -14,20 +14,17 @@
         body { 
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
             text-align: center; 
-            /* --- 背景图片设置 --- */
             background: url('./bg.jpg') no-repeat center center fixed; 
             background-size: cover; 
             color: white; 
             margin: 0;
             padding: env(safe-area-inset-top) 15px 40px 15px;
-            /* 去掉了遮罩层逻辑 */
         }
 
         h1 { 
             font-size: 1.8rem; 
             margin: 20px 0 5px; 
             color: var(--mj-gold); 
-            /* 增强文字阴影，防止背景干扰 */
             text-shadow: 2px 2px 8px rgba(0,0,0,0.8); 
         }
 
@@ -47,14 +44,23 @@
         }
 
         .card-container { perspective: 1000px; height: 180px; }
-        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .card { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            transform-style: preserve-3d; 
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+            cursor: pointer; 
+        }
         .card.flipped { transform: rotateY(180deg); }
 
         .card-face { 
             position: absolute; 
             width: 100%; 
             height: 100%; 
+            /* 核心：隐藏背面，防止穿透 */
             backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
             border-radius: 12px; 
             display: flex; 
             flex-direction: column; 
@@ -65,44 +71,41 @@
             padding: 12px; 
         }
         
-        /* 背面 */
+        /* --- 卡片背面（扣着的牌） --- */
         .card-back { 
-             /* 替换为你上传的卡片背面图片名 */
-            background: url('./card_back.jpg') no-repeat center center; 
+            /* 使用你指定的图片 */
+            background: #2c3e50 url('./cardback.jpg') no-repeat center center; 
             background-size: cover; 
             border: 2px solid var(--mj-gold); 
             color: var(--mj-gold); 
-            position: relative;
+            z-index: 2;
         }
 
- /* 给背面加一层微弱的暗色遮罩，确保“玩家1”等字样能看清 */
+        /* 遮罩层，确保能看清“玩家X”字样 */
         .card-back::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.2); 
+            background: rgba(0, 0, 0, 0.4); 
             border-radius: 10px;
             z-index: 0;
         }
 
-        /* 调整背面文字层级，防止被背景盖住 */
         .card-back span { 
             position: relative;
             z-index: 1;
             font-weight: bold; 
-            font-size: 1.1rem; 
+            font-size: 1.2rem; 
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
-        /* 如果不需要那个大大的🀄图标，可以把下面这段删掉或注释掉 */
-        /* .card-back::after { content: "🀄"; font-size: 3rem; ... } */
-        
-        /* 正面 */
+        /* --- 卡片正面（翻开后的题） --- */
         .card-front { 
             background: var(--mj-ivory); 
             color: #333; 
             transform: rotateY(180deg); 
             border-bottom: 5px solid #ddd; 
+            z-index: 1;
         }
 
         .player-num { 
@@ -116,9 +119,9 @@
             border-radius: 4px; 
         }
 
-        .topic-box { margin-bottom: 12px; width: 100%; }
-        .label { font-size: 0.75rem; color: #7f8c8d; font-weight: bold; margin-bottom: 4px; }
-        .content-text { font-size: 1rem; color: #2c3e50; font-weight: 800; line-height: 1.3; }
+        .topic-box { margin-bottom: 8px; width: 100%; }
+        .label { font-size: 0.7rem; color: #7f8c8d; font-weight: bold; margin-bottom: 2px; }
+        .content-text { font-size: 0.95rem; color: #2c3e50; font-weight: 800; line-height: 1.2; }
         .punish-text { color: var(--mj-red); }
 
         button { 
