@@ -12,29 +12,31 @@
             --mj-border: #eb7a42; 
         }
         
-          body { 
+        body { 
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
             text-align: center; 
-            /* 核心修改：在图片前面叠加一层 50% 透明度的黑色遮罩 */
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+            /* 背景压暗处理 */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                         url('./bg.jpg') no-repeat center center fixed; 
             background-size: cover; 
-            color: white; 
-            margin: 0; 
-            padding: env(safe-area-inset-top) 15px 40px 15px;
+            color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
         }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 450px; margin: 0 auto; }
-        .card-container { perspective: 1000px; height: 210px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 450px; margin: 0 auto; }
+        
+        /* --- 核心修改：增加高度，比例更修长 --- */
+        .card-container { perspective: 1000px; height: 280px; } 
+        
         .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
         .card.flipped { transform: rotateY(180deg); }
 
         .card-face { 
             position: absolute; width: 100%; height: 100%; 
             backface-visibility: hidden; -webkit-backface-visibility: hidden;
-            border-radius: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.4); box-sizing: border-box; padding: 10px;
-            border: 6px solid var(--mj-border); /* 粗边框 */
+            border-radius: 20px; /* 圆角略微调大，更精致 */
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); box-sizing: border-box; padding: 15px;
+            border: 6px solid var(--mj-border); 
         }
         
         /* 玩家颜色配置 */
@@ -44,45 +46,49 @@
         .p4-back { background-color: #481c17; color: #FFF8E7; }
 
         .char-icon {
-            width: 100px; height: 100px; /* 调大一点点 */
-            margin-bottom: 5px;
+            width: 110px; height: 110px; /* 图标适当放大 */
+            margin-bottom: 15px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            background-color: transparent; /* 确保完全透明 */
-            animation: float 2s ease-in-out infinite;
+            background-color: transparent; 
+            animation: float 2.5s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
+            50% { transform: translateY(-15px); }
         }
 
-        .card-back span { font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
+        .card-back span { font-weight: bold; font-size: 1.4rem; letter-spacing: 1px; }
 
-        .card-front { background: var(--mj-ivory); color: #333; transform: rotateY(180deg); }
-        .player-num-tag { position: absolute; top: 8px; left: 8px; background: #333; color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
-        .topic-box { margin-bottom: 5px; width: 100%; }
-        .label { font-size: 0.7rem; color: #7f8c8d; font-weight: bold; }
-        .content-text { font-size: 0.95rem; color: #2c3e50; font-weight: 800; line-height: 1.2; }
-        .punish-text { color: var(--mj-red); }
+        /* 正面样式优化 */
+        .card-front { background: var(--mj-ivory); color: #333; transform: rotateY(180deg); justify-content: space-evenly; }
+        .player-num-tag { position: absolute; top: 10px; left: 10px; background: #333; color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; }
+        
+        .topic-box { width: 100%; padding: 5px 0; }
+        .label { font-size: 0.8rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; }
+        .content-text { font-size: 1.05rem; color: #2c3e50; font-weight: 800; line-height: 1.4; padding: 0 5px; }
+        .punish-text { color: var(--mj-red); border-top: 1px dashed #ccc; pt: 10px; margin-top: 10px; }
 
         button { 
             background: linear-gradient(135deg, #e67e22, #d35400); color: white; border: none; 
-            padding: 14px 45px; font-size: 1.1rem; border-radius: 30px; cursor: pointer; 
-            font-weight: bold; margin-top: 30px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            padding: 16px 60px; font-size: 1.2rem; border-radius: 40px; cursor: pointer; 
+            font-weight: bold; margin-top: 40px; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
         }
+        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <h1 style="color: var(--mj-gold); text-shadow: 2px 2px 5px #000; margin-bottom: 5px;">麻将不要做</h1>
-    <p style="font-size: 0.8rem; margin-bottom: 25px;">点击翻开你的挑战</p>
+    <h1 style="color: var(--mj-gold); text-shadow: 2px 2px 8px #000; margin-top: 30px;">麻将不要做</h1>
+    <p style="font-size: 0.9rem; margin-bottom: 30px; opacity: 0.9;">点击翻牌查看挑战内容</p>
 
     <div class="grid" id="gameBoard"></div>
     <button onclick="shuffle()">重新洗牌</button>
-    <div id="status" style="margin-top: 15px; font-size: 0.7rem; opacity: 0.8;">数据同步中...</div>
+    <div id="status" style="margin-top: 20px; font-size: 0.7rem; opacity: 0.6;">数据已加密同步</div>
 
     <script>
         let gameData = { conditions: [], punishments: [] };
@@ -93,10 +99,10 @@
                 const json = await res.json();
                 gameData.conditions = json.data.conditions;
                 gameData.punishments = json.data.punishments;
-                document.getElementById('status').innerText = "✅ 已就绪";
+                document.getElementById('status').innerText = "✅ 题库加载完毕";
                 shuffle();
             } catch (e) {
-                document.getElementById('status').innerText = "❌ 请检查数据源";
+                document.getElementById('status').innerText = "❌ 资源加载失败";
             }
         }
 
@@ -114,12 +120,9 @@
                 card.className = "card";
                 card.onclick = function() { this.classList.toggle('flipped'); };
                 
-                // 这里后缀改成了 .png
-                const charImg = `./character${i}.png`;
-                
                 card.innerHTML = `
                     <div class="card-face card-back p${i}-back">
-                        <div class="char-icon" style="background-image: url('${charImg}')"></div>
+                        <div class="char-icon" style="background-image: url('./character${i}.png')"></div>
                         <span>玩家 ${i}</span>
                     </div>
                     <div class="card-face card-front">
@@ -128,9 +131,9 @@
                             <div class="label">【触发条件】</div>
                             <div class="content-text">${cList[i-1]}</div>
                         </div>
-                        <div class="topic-box">
+                        <div class="topic-box punish-text">
                             <div class="label">【被制裁了】</div>
-                            <div class="content-text punish-text">${pList[i-1]}</div>
+                            <div class="content-text" style="color:#d32f2f">${pList[i-1]}</div>
                         </div>
                     </div>
                 `;
