@@ -13,155 +13,84 @@
         }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            text-align: center; 
-            background: var(--bg-color); 
-            color: white; 
-            padding: 20px;
-            margin: 0;
+            text-align: center; background: var(--bg-color); color: white; padding: 20px; margin: 0;
         }
-        h1 { margin-bottom: 5px; font-size: 1.5rem; }
-        .desc { font-size: 0.8rem; color: #bdc3c7; margin-bottom: 20px; }
-        
-        .grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            max-width: 500px; 
-            margin: 0 auto;
-        }
-
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; }
         .card { 
-            background: var(--card-front); 
-            color: #333; 
-            border-radius: 12px; 
-            padding: 15px; 
-            min-height: 160px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center;
-            align-items: center;
-            cursor: pointer; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-            transition: all 0.3s ease;
-            position: relative;
-            border: 2px solid transparent;
+            background: var(--card-front); color: #333; border-radius: 12px; padding: 15px; 
+            min-height: 160px; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            transition: all 0.3s ease; position: relative; border: 2px solid transparent;
         }
-
-        /* 隐藏状态（背面） */
-        .card.hidden { 
-            background: var(--card-back); 
-            border: 2px solid var(--accent);
-        }
+        .card.hidden { background: var(--card-back); border: 2px solid var(--accent); }
         .card.hidden .content { opacity: 0; visibility: hidden; }
-        .card.hidden::after { 
-            content: "🀄 点击翻开"; 
-            position: absolute;
-            color: var(--accent); 
-            font-weight: bold; 
-            font-size: 1.1rem;
-        }
-
-        /* 显示状态（正面） */
-        .content { 
-            transition: opacity 0.3s;
-            width: 100%;
-        }
-        .player-tag { 
-            font-size: 0.8rem; 
-            color: #888; 
-            margin-bottom: 10px; 
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-        }
+        .card.hidden::after { content: "🀄 点击翻开"; position: absolute; color: var(--accent); font-weight: bold; }
+        .player-tag { font-size: 0.8rem; color: #888; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         .topic-label { font-weight: bold; color: #1a4d33; font-size: 0.9rem; }
         .punish-label { font-weight: bold; color: #c0392b; font-size: 0.9rem; margin-top: 10px; }
         .text-detail { font-size: 1.05rem; margin-top: 4px; line-height: 1.4; }
-
         button { 
-            background: #e67e22; 
-            color: white;
-            border: none; 
-            padding: 15px 40px; 
-            font-size: 1.1rem; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            margin: 25px 0;
-            box-shadow: 0 4px 0 #d35400;
+            background: #e67e22; color: white; border: none; padding: 15px 40px; 
+            font-size: 1.1rem; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; margin: 25px 0; box-shadow: 0 4px 0 #d35400;
         }
-        button:active { transform: translateY(2px); box-shadow: 0 2px 0 #d35400; }
-        
         #loading-status { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
     </style>
 </head>
 <body>
-
     <h1>麻将不要做挑战</h1>
-    <p class="desc">全员禁忌暗牌模式</p>
-
     <div id="loading-status">正在连接题库...</div>
     <button onclick="shuffle()">重新随机发牌</button>
-
-    <div class="grid" id="gameBoard">
-        </div>
+    <div class="grid" id="gameBoard"></div>
 
     <script>
         let gameData = { conditions: [], punishments: [] };
 
-        // 1. 自动从仓库读取 data.json
         async function init() {
             const status = document.getElementById('loading-status');
             try {
-                const response = await fetch('./data.json');
-                if (!response.ok) throw new Error('网络请求失败');
-                const json = await response.json();
+                // 重点：使用当前时间戳强制刷新，确保不读旧缓存
+                const res = await fetch('./data.json?t=' + Date.now());
+                if (!res.ok) throw new Error('找不到 data.json');
+                const json = await res.json();
                 
-                // 适配你提供的 JSON 结构: json.data.conditions
-                gameData.conditions = json.data.conditions;
-                gameData.punishments = json.data.punishments;
+                // 自动识别不同的数据层级
+                const d = json.data || json; 
+                gameData.conditions = d.conditions || [];
+                gameData.punishments = d.punishments || [];
                 
-                status.innerText = "✅ 题库加载完毕，共 " + gameData.conditions.length + " 条题目";
-                shuffle(); // 初始加载即发牌
+                if (gameData.conditions.length === 0) throw new Error('题库里没东西');
+
+                status.innerText = "✅ 题库同步成功！";
+                shuffle();
             } catch (e) {
+                status.innerText = "❌ 还是失败了：" + e.message;
                 console.error(e);
-                status.innerText = "❌ 题库加载失败，请检查 data.json";
-                status.style.color = "red";
             }
         }
 
-        // 2. 发牌逻辑
         function shuffle() {
             if (gameData.conditions.length < 4) return;
-
             const board = document.getElementById('gameBoard');
             board.innerHTML = "";
-
-            // 随机打乱题目
-            let shuffledConds = [...gameData.conditions].sort(() => Math.random() - 0.5);
-            let shuffledPuns = [...gameData.punishments].sort(() => Math.random() - 0.5);
+            let cList = [...gameData.conditions].sort(() => Math.random() - 0.5);
+            let pList = [...gameData.punishments].sort(() => Math.random() - 0.5);
 
             for (let i = 1; i <= 4; i++) {
-                const c = shuffledConds[i - 1];
-                const p = shuffledPuns[i - 1];
-                
                 const card = document.createElement('div');
                 card.className = "card hidden";
                 card.onclick = function() { this.classList.toggle('hidden'); };
-                
                 card.innerHTML = `
                     <div class="content">
                         <div class="player-tag">玩家 ${i}</div>
                         <div class="topic-label">不可做的禁忌：</div>
-                        <div class="text-detail">${c}</div>
+                        <div class="text-detail">${cList[i-1]}</div>
                         <div class="punish-label">违反后的惩罚：</div>
-                        <div class="text-detail">${p}</div>
-                    </div>
-                `;
+                        <div class="text-detail">${pList[i-1]}</div>
+                    </div>`;
                 board.appendChild(card);
             }
         }
-
-        // 启动
         init();
     </script>
 </body>
