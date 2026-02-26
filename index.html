@@ -9,6 +9,7 @@
             --mj-gold: #ffcc00;
             --mj-ivory: #fdfaf2;
             --mj-red: #d32f2f;
+            --mj-border: #eb7a42; /* 统一边框色 */
         }
         
         body { 
@@ -21,19 +22,8 @@
             padding: env(safe-area-inset-top) 15px 40px 15px;
         }
 
-        h1 { 
-            font-size: 1.8rem; 
-            margin: 20px 0 5px; 
-            color: var(--mj-gold); 
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.8); 
-        }
-
-        .desc { 
-            font-size: 0.8rem; 
-            color: white; 
-            margin-bottom: 25px; 
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
-        }
+        h1 { font-size: 1.8rem; margin: 20px 0 5px; color: var(--mj-gold); text-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
+        .desc { font-size: 0.8rem; color: white; margin-bottom: 25px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
 
         .grid { 
             display: grid; 
@@ -43,106 +33,87 @@
             margin: 0 auto; 
         }
 
-        .card-container { perspective: 1000px; height: 180px; }
-        .card { 
-            width: 100%; 
-            height: 100%; 
-            position: relative; 
-            transform-style: preserve-3d; 
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-            cursor: pointer; 
-        }
+        .card-container { perspective: 1000px; height: 200px; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
         .card.flipped { transform: rotateY(180deg); }
 
         .card-face { 
             position: absolute; 
-            width: 100%; 
-            height: 100%; 
-            /* 核心：隐藏背面，防止穿透 */
+            width: 100%; height: 100%; 
             backface-visibility: hidden; 
             -webkit-backface-visibility: hidden;
-            border-radius: 12px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
+            border-radius: 15px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4); 
             box-sizing: border-box; 
-            padding: 12px; 
+            padding: 10px;
+            border: 5px solid var(--mj-border); /* 加粗边框 */
         }
         
-        /* --- 卡片背面（扣着的牌） --- */
-        .card-back { 
-            /* 使用你指定的图片 */
-            background: #2c3e50 url('./cardback.jpg') no-repeat center center; 
-            background-size: cover; 
-            border: 3px solid #8b0000; 
-            color: #8b0000; 
-            z-index: 2;
+        /* --- 卡片背面各玩家样式 --- */
+        /* 玩家1 */
+        .p1-back { background-color: #f7b4f3; color: #ae2cef; }
+        /* 玩家2 */
+        .p2-back { background-color: #970037; color: #f4cd87; }
+        /* 玩家3 */
+        .p3-back { background-color: #FFF8E7; color: #481c17; }
+        /* 玩家4 */
+        .p4-back { background-color: #481c17; color: #FFF8E7; }
+
+        /* 图标样式与上下跳动动画 */
+        .char-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background-size: cover;
+            background-position: center;
+            animation: float 2s ease-in-out infinite; /* 规律跳动 */
         }
 
-        .card-back span { 
-            position: relative;
-            z-index: 1;
-            font-weight: bold; 
-            font-size: 1.2rem; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
 
-        /* --- 卡片正面（翻开后的题） --- */
+        .card-back span { font-weight: bold; font-size: 1.1rem; }
+
+        /* --- 卡片正面 --- */
         .card-front { 
             background: var(--mj-ivory); 
             color: #333; 
             transform: rotateY(180deg); 
-            border-bottom: 5px solid #ddd; 
-            z-index: 1;
         }
 
-        .player-num { 
-            position: absolute; 
-            top: 8px; 
-            left: 8px; 
-            background: #0a5d34; 
-            color: white; 
-            font-size: 0.7rem; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
+        .player-num-tag { 
+            position: absolute; top: 8px; left: 8px; 
+            background: #333; color: white; 
+            font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; 
         }
 
-        .topic-box { margin-bottom: 8px; width: 100%; }
-        .label { font-size: 0.7rem; color: #7f8c8d; font-weight: bold; margin-bottom: 2px; }
-        .content-text { font-size: 0.95rem; color: #2c3e50; font-weight: 800; line-height: 1.2; }
+        .topic-box { margin-bottom: 5px; width: 100%; }
+        .label { font-size: 0.7rem; color: #7f8c8d; font-weight: bold; }
+        .content-text { font-size: 0.9rem; color: #2c3e50; font-weight: 800; }
         .punish-text { color: var(--mj-red); }
 
         button { 
-            background: linear-gradient(135deg, #e67e22, #d35400); 
-            color: white; 
-            border: none; 
-            padding: 14px 45px; 
-            font-size: 1.1rem; 
-            border-radius: 30px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            margin-top: 30px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+            background: linear-gradient(135deg, #e67e22, #d35400); color: white; border: none; 
+            padding: 14px 45px; font-size: 1.1rem; border-radius: 30px; cursor: pointer; 
+            font-weight: bold; margin-top: 30px; 
         }
         
-        #status { 
-            font-size: 0.7rem; 
-            margin-top: 15px; 
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-        }
+        #status { font-size: 0.7rem; margin-top: 15px; color: white; }
     </style>
 </head>
 <body>
 
     <h1>麻将不要做</h1>
-    <p class="desc">点击翻开查看，再次点击扣盖</p>
+    <p class="desc">点击查看你的秘密挑战</p>
 
     <div class="grid" id="gameBoard"></div>
     <button onclick="shuffle()">重新洗牌</button>
-    <div id="status">正在同步题库...</div>
+    <div id="status">加载中...</div>
 
     <script>
         let gameData = { conditions: [], punishments: [] };
@@ -153,10 +124,10 @@
                 const json = await res.json();
                 gameData.conditions = json.data.conditions;
                 gameData.punishments = json.data.punishments;
-                document.getElementById('status').innerText = "✅ 题库已同步";
+                document.getElementById('status').innerText = "✅ 题库同步成功";
                 shuffle();
             } catch (e) {
-                document.getElementById('status').innerText = "❌ 题库连接失败";
+                document.getElementById('status').innerText = "❌ 题库加载失败";
             }
         }
 
@@ -174,10 +145,16 @@
                 card.className = "card";
                 card.onclick = function() { this.classList.toggle('flipped'); };
                 
+                // 动态图片路径
+                const charImg = `./character${i}.jpg`;
+                
                 card.innerHTML = `
-                    <div class="card-face card-back"><span>玩家 ${i}</span></div>
+                    <div class="card-face card-back p${i}-back">
+                        <div class="char-icon" style="background-image: url('${charImg}')"></div>
+                        <span>玩家 ${i}</span>
+                    </div>
                     <div class="card-face card-front">
-                        <div class="player-num">玩家 ${i}</div>
+                        <div class="player-num-tag">玩家 ${i}</div>
                         <div class="topic-box">
                             <div class="label">【触发条件】</div>
                             <div class="content-text">${cList[i-1]}</div>
