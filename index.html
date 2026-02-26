@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🀄️ 麻将不要做挑战</title>
-    <style>
+        <style>
         :root {
             --mj-gold: #ffcc00;
             --mj-ivory: #fdfaf2;
@@ -15,43 +15,68 @@
         body { 
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
             text-align: center; 
-            /* 背景压暗处理 */
+            /* 背景图：叠加了 60% 透明度的黑色遮罩，让画面变暗 */
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                         url('./bg.jpg') no-repeat center center fixed; 
             background-size: cover; 
             color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
         }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 450px; margin: 0 auto; }
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            max-width: 450px; 
+            margin: 0 auto; 
+        }
         
-        /* --- 核心修改：增加高度，比例更修长 --- */
-        .card-container { perspective: 1000px; height: 280px; } 
+        /* 增加视角深度，解决 Safari 兼容性 */
+        .card-container { 
+            perspective: 1200px; 
+            -webkit-perspective: 1200px; 
+            height: 280px; /* 增加高度，更修长 */
+        }
         
-        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .card { 
+            width: 100%; height: 100%; 
+            position: relative; 
+            transform-style: preserve-3d; 
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+            cursor: pointer; 
+        }
         .card.flipped { transform: rotateY(180deg); }
 
         .card-face { 
             position: absolute; width: 100%; height: 100%; 
-            backface-visibility: hidden; -webkit-backface-visibility: hidden;
-            border-radius: 20px; /* 圆角略微调大，更精致 */
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
+            border-radius: 20px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.5); box-sizing: border-box; padding: 15px;
             border: 6px solid var(--mj-border); 
         }
         
-        /* 玩家颜色配置 */
+        /* --- 玩家颜色配置 --- */
         .p1-back { background-color: #ff9a30; color: #8e190f; }
         .p2-back { background-color: #970037; color: #f4cd87; }
         .p3-back { background-color: #FFF8E7; color: #481c17; }
         .p4-back { background-color: #481c17; color: #FFF8E7; }
 
         .char-icon {
-            width: 110px; height: 110px; /* 图标适当放大 */
+            width: 110px; height: 110px;
             margin-bottom: 15px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             background-color: transparent; 
+            
+            /* --- 核心：解决手机端翻牌闪烁 --- */
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translateZ(0); 
+            transform: translateZ(0);
+            
             animation: float 2.5s ease-in-out infinite;
         }
 
@@ -62,14 +87,23 @@
 
         .card-back span { font-weight: bold; font-size: 1.4rem; letter-spacing: 1px; }
 
-        /* 正面样式优化 */
-        .card-front { background: var(--mj-ivory); color: #333; transform: rotateY(180deg); justify-content: space-evenly; }
-        .player-num-tag { position: absolute; top: 10px; left: 10px; background: #333; color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; }
+        .card-front { 
+            background: var(--mj-ivory); 
+            color: #333; 
+            transform: rotateY(180deg); 
+            justify-content: space-evenly; 
+        }
+        
+        .player-num-tag { 
+            position: absolute; top: 10px; left: 10px; 
+            background: #333; color: white; 
+            font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; 
+        }
         
         .topic-box { width: 100%; padding: 5px 0; }
         .label { font-size: 0.8rem; color: #7f8c8d; font-weight: bold; margin-bottom: 5px; }
         .content-text { font-size: 1.05rem; color: #2c3e50; font-weight: 800; line-height: 1.4; padding: 0 5px; }
-        .punish-text { color: var(--mj-red); border-top: 1px dashed #ccc; pt: 10px; margin-top: 10px; }
+        .punish-text { color: var(--mj-red); border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 10px; }
 
         button { 
             background: linear-gradient(135deg, #e67e22, #d35400); color: white; border: none; 
@@ -79,6 +113,7 @@
             transition: transform 0.2s;
         }
         button:active { transform: scale(0.95); }
+        #status { margin-top: 20px; font-size: 0.7rem; opacity: 0.6; }
     </style>
 </head>
 <body>
