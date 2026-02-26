@@ -12,12 +12,16 @@
             --mj-border: #eb7a42; 
         }
         
-        body { 
+          body { 
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
             text-align: center; 
-            background: url('./bg.jpg') no-repeat center center fixed; 
+            /* 核心修改：在图片前面叠加一层 50% 透明度的黑色遮罩 */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('./bg.jpg') no-repeat center center fixed; 
             background-size: cover; 
-            color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
+            color: white; 
+            margin: 0; 
+            padding: env(safe-area-inset-top) 15px 40px 15px;
         }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 450px; margin: 0 auto; }
