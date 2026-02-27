@@ -1,258 +1,104 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🀄️ 麻将不要做挑战</title>
+    <title>游戏面板 - 星露谷风格</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --mj-gold: #ffcc00;
-            --mj-ivory: #fdfaf2;
-            --mj-red: #d32f2f;
-            --mj-border: #eb7a42; 
-        }
-        
         body { 
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
-            text-align: center; 
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                        url('./bg.jpg') no-repeat center center fixed; 
-            background-size: cover; 
-            color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
-            overflow-x: hidden;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
+            margin: 0; padding: 0; background: #333; 
+            font-family: 'ZCOOL KuaiLe', cursive; color: white;
+            display: flex; flex-direction: column; align-items: center;
         }
-
-        /* 右上角历史按钮 */
-        .history-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--mj-gold);
-            color: var(--mj-gold);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            z-index: 100;
-            cursor: pointer;
+        .status-bar { 
+            margin: 20px 0; color: #ffcc00; font-size: 18px; 
+            background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 20px;
         }
-
-        /* 历史记录面板 */
-        #historyPanel {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 200;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+        /* 手机端两列饱满布局 */
+        .card-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; 
+            gap: 15px; width: 95%; padding: 10px; box-sizing: border-box;
         }
-        .history-item {
-            background: rgba(255,255,255,0.1);
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: left;
-            font-size: 0.8rem;
-            border-left: 4px solid var(--mj-gold);
+        .card-box { 
+            height: 65vw; min-height: 240px; perspective: 1000px; cursor: pointer;
         }
-        .history-time { color: var(--mj-gold); margin-bottom: 5px; font-weight: bold; }
-        .close-history {
-            position: absolute; top: 10px; right: 20px;
-            font-size: 2rem; color: white; cursor: pointer;
+        .card-inner { 
+            position: relative; width: 100%; height: 100%; 
+            transition: transform 0.6s; transform-style: preserve-3d; 
         }
-
-        h1 { color: var(--mj-gold); text-shadow: 2px 2px 8px #000; margin-top: 40px; font-size: 1.8rem; }
-        .desc { font-size: 0.9rem; margin-bottom: 25px; opacity: 0.8; }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 450px; margin: 0 auto; }
-        .card-container { perspective: 1200px; height: 280px; }
-        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-        .card.flipped { transform: rotateY(180deg); }
-
-        .card-face { 
+        .card-box.flipped .card-inner { transform: rotateY(180deg); }
+        .face { 
             position: absolute; width: 100%; height: 100%; 
-            backface-visibility: hidden; border-radius: 20px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6); box-sizing: border-box; padding: 15px;
-            border: 6px solid var(--mj-border); 
+            backface-visibility: hidden; border-radius: 15px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 10px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
         }
+        /* 玩家背面颜色 */
+        .p1 { background: #ff9a30; } .p2 { background: #970037; }
+        .p3 { background: #FFF8E7; color: #5d3a1a !important; border: 3px solid #eb7a42; } .p4 { background: #481c17; }
         
-        .p1-back { background-color: #ff9a30; color: #8e190f; }
-        .p2-back { background-color: #970037; color: #f4cd87; }
-        .p3-back { background-color: #FFF8E7; color: #481c17; }
-        .p4-back { background-color: #481c17; color: #FFF8E7; }
-
-        .char-icon {
-            width: 100px; height: 100px; margin-bottom: 10px;
-            background-size: contain; background-repeat: no-repeat; background-position: center;
-            animation: float 2.5s ease-in-out infinite;
+        .card-front { 
+            background: #fff8e7; color: #5d3a1a; transform: rotateY(180deg); 
+            border: 4px solid #5d3a1a;
         }
+        .main-text { font-size: 18px; line-height: 1.4; margin: 5px 0; }
+        .label { font-size: 12px; color: #888; }
+        .red { color: #e74c3c !important; }
 
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-
-        .card-back { z-index: 2; transform: rotateY(0deg); }
-        .card-back span { font-weight: bold; font-size: 1.2rem; }
-        .card-front { background: var(--mj-ivory); color: #333; transform: rotateY(180deg); justify-content: space-evenly; }
-        .player-num-tag { position: absolute; top: 12px; left: 12px; background: #333; color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 6px; }
-        .content-text { font-size: 1rem; color: #2c3e50; font-weight: 900; line-height: 1.3; }
-        .punish-text { color: var(--mj-red); border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 5px; }
-
-        button.shuffle-btn { 
-            background: linear-gradient(135deg, #e67e22, #d35400); color: white; border: none; 
-            padding: 16px 60px; font-size: 1.1rem; border-radius: 40px; cursor: pointer; 
-            font-weight: bold; margin-top: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        /* 木质洗牌按钮 */
+        .shuffle-btn {
+            margin: 30px 0; width: 80%; height: 60px;
+            background: #e6b06e; border: 4px solid #5d3a1a;
+            color: #5d3a1a; font-family: 'ZCOOL KuaiLe'; font-size: 22px;
+            box-shadow: inset -3px -3px 0px #9d6d3d, inset 3px 3px 0px #f5d6a8;
         }
     </style>
 </head>
 <body>
-
-    <div class="history-btn" onclick="toggleHistory(true)">📜 历史记录</div>
-
-    <div id="historyPanel">
-        <span class="close-history" onclick="toggleHistory(false)">×</span>
-        <h2 style="color:var(--mj-gold)">最近 10 局存档</h2>
-        <div id="historyContent"></div>
-        <button onclick="clearHistory()" style="margin-top:20px; background:none; border:1px solid #ff4444; color:#ff4444; padding:5px 15px; border-radius:15px;">清空所有历史</button>
-    </div>
-
-    <h1>麻将不要做</h1>
-    <p class="desc">记录已自动存档</p>
-
-    <div class="grid" id="gameBoard"></div>
-    <button class="shuffle-btn" onclick="confirmShuffle()">重新洗牌</button>
-    <div id="status" style="margin-top:20px; font-size:0.7rem; opacity:0.5;"></div>
+    <div class="status-bar" id="status">正在加载房间...</div>
+    <div class="card-grid" id="grid"></div>
+    <button class="shuffle-btn" onclick="initGame()">重新洗牌</button>
 
     <script>
-        let gameData = { conditions: [], punishments: [] };
-        let currentSession = [];
+        const conditions = ["有人说“听牌”", "有人碰牌", "有人笑", "有人打出单数", "有人打九", "有人说“胡”", "有人打出筒", "全场安静三秒"];
+        const punishments = ["扇自己巴掌", "闻自己脚", "喵一声", "喝一大口水", "大笑三声", "模仿猩猩", "做三个深蹲"];
 
-        async function init() {
-            try {
-                const res = await fetch('./data.json?t=' + Date.now());
-                const json = await res.json();
-                gameData.conditions = json.data.conditions;
-                gameData.punishments = json.data.punishments;
-                
-                const savedData = localStorage.getItem('mj_session');
-                if (savedData) {
-                    currentSession = JSON.parse(savedData);
-                    renderBoard();
-                    document.getElementById('status').innerText = "已加载当前对局";
-                } else {
-                    shuffle();
-                }
-            } catch (e) {
-                document.getElementById('status').innerText = "连接失败";
-            }
-        }
+        const params = new URLSearchParams(window.location.search);
+        const room = params.get('room');
+        const myRole = parseInt(params.get('role'));
 
-        function confirmShuffle() {
-            if (confirm("确定重新洗牌吗？这会直接开始下一局！")) {
-                archiveCurrentSession();
-                shuffle();
-            }
-        }
+        document.getElementById('status').innerText = `房间: ${room} | 你是玩家 ${myRole}`;
 
-        // 将当前局存入历史
-        function archiveCurrentSession() {
-            if (currentSession.length === 0) return;
-            let history = JSON.parse(localStorage.getItem('mj_history') || "[]");
-            const record = {
-                time: new Date().toLocaleString(),
-                details: currentSession.map(s => `玩家${s.playerIdx}: ${s.condition}`)
-            };
-            history.unshift(record); // 插到开头
-            history = history.slice(0, 10); // 只保留最近10条
-            localStorage.setItem('mj_history', JSON.stringify(history));
-        }
+        function initGame() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
+            const s_c = [...conditions].sort(() => Math.random() - 0.5);
+            const s_p = [...punishments].sort(() => Math.random() - 0.5);
 
-        function toggleHistory(show) {
-            const panel = document.getElementById('historyPanel');
-            panel.style.display = show ? 'block' : 'none';
-            if (show) renderHistoryList();
-        }
-
-        function renderHistoryList() {
-            const content = document.getElementById('historyContent');
-            const history = JSON.parse(localStorage.getItem('mj_history') || "[]");
-            if (history.length === 0) {
-                content.innerHTML = "<p>暂无历史记录</p>";
-                return;
-            }
-            content.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <div class="history-time">${item.time}</div>
-                    ${item.details.join('<br>')}
-                </div>
-            `).join('');
-        }
-
-        function clearHistory() {
-            if(confirm("确定清空吗？")) {
-                localStorage.removeItem('mj_history');
-                renderHistoryList();
-            }
-        }
-
-        function shuffle() {
-            let cList = [...gameData.conditions].sort(() => Math.random() - 0.5);
-            let pList = [...gameData.punishments].sort(() => Math.random() - 0.5);
-            currentSession = [];
-            for (let i = 0; i < 4; i++) {
-                currentSession.push({
-                    playerIdx: i + 1,
-                    condition: cList[i],
-                    punishment: pList[i],
-                    isFlipped: false
-                });
-            }
-            saveSession();
-            renderBoard();
-        }
-
-        function saveSession() {
-            localStorage.setItem('mj_session', JSON.stringify(currentSession));
-        }
-
-        function renderBoard() {
-            const board = document.getElementById('gameBoard');
-            board.innerHTML = "";
-            currentSession.forEach((item, index) => {
-                const container = document.createElement('div');
-                container.className = "card-container";
+            for (let i = 1; i <= 4; i++) {
+                const isMine = i === myRole;
                 const card = document.createElement('div');
-                card.className = "card" + (item.isFlipped ? " flipped" : "");
-                card.onclick = function() { 
-                    item.isFlipped = this.classList.toggle('flipped'); 
-                    saveSession();
+                card.className = "card-box";
+                card.onclick = function() {
+                    if(!isMine) return alert("只能看你自己的牌！");
+                    this.classList.toggle('flipped');
                 };
                 card.innerHTML = `
-                    <div class="card-face card-back p${item.playerIdx}-back">
-                        <div class="char-icon" style="background-image: url('./character${item.playerIdx}.png')"></div>
-                        <span>玩家 ${item.playerIdx}</span>
-                    </div>
-                    <div class="card-face card-front">
-                        <div class="player-num-tag">玩家 ${item.playerIdx}</div>
-                        <div class="topic-box">
-                            <div class="label">条件</div>
-                            <div class="content-text">${item.condition}</div>
+                    <div class="card-inner">
+                        <div class="face p${i}">玩家 ${i}${isMine?' (你)':''}</div>
+                        <div class="face card-front">
+                            <div class="label">【不要做】</div>
+                            <div class="main-text">${s_c[i]}</div>
+                            <div style="width:50%;height:1px;background:#ddd;margin:10px 0;"></div>
+                            <div class="label red">【否则惩罚】</div>
+                            <div class="main-text red">${s_p[i]}</div>
                         </div>
-                        <div class="topic-box punish-text">
-                            <div class="label">惩罚</div>
-                            <div class="content-text" style="color:#d32f2f">${item.punishment}</div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-                board.appendChild(container);
-            });
+                    </div>`;
+                grid.appendChild(card);
+            }
         }
-
-        init();
+        initGame();
     </script>
 </body>
 </html>
