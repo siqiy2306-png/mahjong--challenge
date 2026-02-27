@@ -7,12 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     
     <style>
-        /* 2. 强制全局应用新字体，!important 确保不被原有样式覆盖 */
+        /* 强制改变所有元素的字体，其他布局样式完全保留 */
         * {
             font-family: 'ZCOOL KuaiLe', cursive !important;
         }
 
-        /* 以下是你原始的 CSS 布局（我一点没动，只确保它们也用新字体） */
         body { 
             margin: 0; padding: 0; background: #333; color: white;
             display: flex; flex-direction: column; align-items: center;
@@ -58,15 +57,16 @@
     </style>
 </head>
 <body>
-    <div class="status-bar" id="status">加载中...</div>
+    <div class="status-bar" id="status">正在同步房间信息...</div>
     <div class="card-grid" id="grid"></div>
     <button class="shuffle-btn" onclick="initGame()">重新洗牌</button>
 
     <script>
-        /* 3. 这里保持你原始的所有逻辑代码 */
+        // 保持你原本的题库逻辑不变
         const conditions = ["有人说“听牌”", "有人碰牌", "有人笑", "有人打出单数", "有人说“胡”", "有人打出筒", "全场安静三秒"];
         const punishments = ["扇自己巴掌", "闻自己脚", "喵一声", "喝一大口水", "大笑三声", "模仿猩猩"];
 
+        // 接收界面1传来的参数
         const params = new URLSearchParams(window.location.search);
         const room = params.get('room') || "----";
         const myRole = parseInt(params.get('role')) || 1;
@@ -94,7 +94,7 @@
                             <div class="label">【不要做】</div>
                             <div class="main-text">${s_c[i % s_c.length]}</div>
                             <div style="width:50%;height:1px;background:#ddd;margin:10px 0;"></div>
-                            <div class="label red">【惩罚】</div>
+                            <div class="label red">【否则惩罚】</div>
                             <div class="main-text red">${s_p[i % s_p.length]}</div>
                         </div>
                     </div>`;
