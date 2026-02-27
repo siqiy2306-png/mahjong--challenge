@@ -20,13 +20,12 @@
             background-size: cover; 
             color: white; margin: 0; padding: env(safe-area-inset-top) 15px 40px 15px;
             overflow-x: hidden;
-            /* 禁止手机端长按弹出菜单，更像游戏 */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
         }
 
         h1 { color: var(--mj-gold); text-shadow: 2px 2px 8px #000; margin-top: 30px; font-size: 1.8rem; }
-        .desc { font-size: 0.9rem; margin-bottom: 30px; opacity: 0.8; }
+        .desc { font-size: 0.9rem; margin-bottom: 25px; opacity: 0.8; }
 
         .grid { 
             display: grid; 
@@ -47,7 +46,6 @@
             position: relative; 
             transform-style: preserve-3d; 
             -webkit-transform-style: preserve-3d;
-            /* 翻转速度设为0.6秒，手感最自然 */
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer;
         }
@@ -66,7 +64,6 @@
             transform: translate3d(0,0,0);
         }
         
-        /* 玩家背面配色 */
         .p1-back { background-color: #ff9a30; color: #8e190f; }
         .p2-back { background-color: #970037; color: #f4cd87; }
         .p3-back { background-color: #FFF8E7; color: #481c17; }
@@ -79,7 +76,7 @@
             background-repeat: no-repeat;
             background-position: center;
             background-color: transparent; 
-            -webkit-transform: translateZ(1px); /* 让图标稍微浮起，解决层级闪烁 */
+            -webkit-transform: translateZ(1px);
             transform: translateZ(1px);
             animation: float 2.5s ease-in-out infinite;
         }
@@ -121,20 +118,21 @@
             -webkit-tap-highlight-color: transparent;
         }
         button:active { transform: scale(0.92); opacity: 0.9; }
-        #status { margin-top: 20px; font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px; }
+        #status { margin-top: 20px; font-size: 0.7rem; opacity: 0.5; }
     </style>
 </head>
 <body>
 
     <h1>麻将不要做</h1>
-    <p class="desc">点击任意牌翻开或扣盖</p>
+    <p class="desc">记录已锁定，不怕误刷新</p >
 
     <div class="grid" id="gameBoard"></div>
-    <button onclick="shuffle()">重新洗牌</button>
-    <div id="status">数据同步中...</div>
+    <button onclick="confirmShuffle()">重新洗牌</button>
+    <div id="status">数据读取中...</div>
 
     <script>
         let gameData = { conditions: [], punishments: [] };
+        let currentSession = []; // 用于存储当前这一局的题目分配
 
         async function init() {
             try {
@@ -142,34 +140,73 @@
                 const json = await res.json();
                 gameData.conditions = json.data.conditions;
                 gameData.punishments = json.data.punishments;
-                document.getElementById('status').innerText = "✅ 挑战已准备就绪";
-                shuffle();
+                
+                // 检查本地是否有存过的旧记录
+                const savedData = localStorage.getItem('mj_session');
+                if (savedData) {
+                    currentSession = JSON.parse(savedData);
+                    renderBoard(true); // 使用记录渲染
+                    document.getElementById('status').innerText = "✅ 已恢复上一局进度";
+                } else {
+                    shuffle(); // 没记录则新开
+                    document.getElementById('status').innerText = "✅ 新的一局已开始";
+                }
             } catch (e) {
-                document.getElementById('status').innerText = "❌ 题库连接失败，请检查路径";
+                document.getElementById('status').innerText = "❌ 题库连接失败";
+            }
+        }
+
+        // 重新洗牌前询问，防止误点
+        function confirmShuffle() {
+            if (confirm("确定要重新洗牌吗？这会清除当前的挑战记录！")) {
+                shuffle();
             }
         }
 
         function shuffle() {
             if (gameData.conditions.length < 4) return;
-            const board = document.getElementById('gameBoard');
-            board.innerHTML = "";
+            
+            // 随机抽取
             let cList = [...gameData.conditions].sort(() => Math.random() - 0.5);
             let pList = [...gameData.punishments].sort(() => Math.random() - 0.5);
 
-            for (let i = 1; i <= 4; i++) {
+            currentSession = [];
+            for (let i = 0; i < 4; i++) {
+                currentSession.push({
+                    playerIdx: i + 1,
+                    condition: cList[i],
+                    punishment: pList[i],
+                    isFlipped: false
+                });
+            }
+            saveSession();
+            renderBoard();
+        }
+
+        // 保存到本地存储
+        function saveSession() {
+            localStorage.setItem('mj_session', JSON.stringify(currentSession));
+        }
+
+        function renderBoard(isFromHistory = false) {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = "";
+
+            currentSession.forEach((item, index) => {
                 const container = document.createElement('div');
                 container.className = "card-container";
-                const card = document.createElement('div');
-                card.className = "card";
                 
-                // 核心翻牌逻辑：支持正反无限翻转
+                const card = document.createElement('div');
+                card.className = "card" + (item.isFlipped ? " flipped" : "");
+                
                 card.onclick = function() { 
-                    const isFlipped = this.classList.toggle('flipped'); 
+                    const flipped = this.classList.toggle('flipped'); 
+                    // 更新并保存翻牌状态
+                    currentSession[index].isFlipped = flipped;
+                    saveSession();
+
                     const icon = this.querySelector('.char-icon');
-                    
-                    // 翻到正面（文字）时暂停动画以提升手机流畅度
-                    // 翻回背面（角色）时重新启动动画
-                    if (isFlipped) {
+                    if (flipped) {
                         setTimeout(() => { 
                             if(this.classList.contains('flipped')) icon.style.animationPlayState = 'paused'; 
                         }, 500);
@@ -179,26 +216,33 @@
                 };
                 
                 card.innerHTML = `
-                    <div class="card-face card-back p${i}-back">
-                        <div class="char-icon" style="background-image: url('./character${i}.png')"></div>
-                        <span>玩家 ${i}</span>
+                    <div class="card-face card-back p${item.playerIdx}-back">
+                        <div class="char-icon" style="background-image: url('./character${item.playerIdx}.png')"></div>
+                        <span>玩家 ${item.playerIdx}</span>
                     </div>
                     <div class="card-face card-front">
-                        <div class="player-num-tag">玩家 ${i}</div>
+                        <div class="player-num-tag">玩家 ${item.playerIdx}</div>
                         <div class="topic-box">
                             <div class="label">【触发条件】</div>
-                            <div class="content-text">${cList[i-1]}</div>
+                            <div class="content-text">${item.condition}</div>
                         </div>
                         <div class="topic-box punish-text">
                             <div class="label">【被制裁了】</div>
-                            <div class="content-text" style="color:#d32f2f">${pList[i-1]}</div>
+                            <div class="content-text" style="color:#d32f2f">${item.punishment}</div>
                         </div>
                     </div>
                 `;
                 container.appendChild(card);
                 board.appendChild(container);
-            }
+
+                // 如果是从历史恢复且原本就是翻开的，需要处理动画暂停
+                if(item.isFlipped) {
+                    const icon = card.querySelector('.char-icon');
+                    icon.style.animationPlayState = 'paused';
+                }
+            });
         }
+
         init();
     </script>
 </body>
