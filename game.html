@@ -6,6 +6,9 @@
     <title>🀄️ 麻将不要做挑战</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
+        /* 强制全局应用新字体，不改变其他布局 */
+        * { font-family: 'ZCOOL KuaiLe', cursive !important; }
+
         :root {
             --mj-gold: #ffcc00;
             --mj-ivory: #fdfaf2;
@@ -14,7 +17,6 @@
         }
         
         body { 
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
             text-align: center; 
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                         url('./bg.jpg') no-repeat center center fixed; 
@@ -25,46 +27,25 @@
             -webkit-user-select: none;
         }
 
-        /* 右上角历史按钮 */
         .history-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--mj-gold);
-            color: var(--mj-gold);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            z-index: 100;
-            cursor: pointer;
+            position: fixed; top: 15px; right: 15px;
+            background: rgba(0, 0, 0, 0.5); border: 1px solid var(--mj-gold);
+            color: var(--mj-gold); padding: 5px 12px; border-radius: 20px;
+            font-size: 0.8rem; z-index: 100; cursor: pointer;
         }
 
-        /* 历史记录面板 */
         #historyPanel {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 200;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 200; padding: 40px 20px;
+            box-sizing: border-box; overflow-y: auto;
         }
         .history-item {
-            background: rgba(255,255,255,0.1);
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: left;
-            font-size: 0.8rem;
-            border-left: 4px solid var(--mj-gold);
+            background: rgba(255,255,255,0.1); margin-bottom: 15px;
+            padding: 10px; border-radius: 10px; text-align: left;
+            font-size: 0.8rem; border-left: 4px solid var(--mj-gold);
         }
         .history-time { color: var(--mj-gold); margin-bottom: 5px; font-weight: bold; }
-        .close-history {
-            position: absolute; top: 10px; right: 20px;
-            font-size: 2rem; color: white; cursor: pointer;
-        }
+        .close-history { position: absolute; top: 10px; right: 20px; font-size: 2rem; color: white; cursor: pointer; }
 
         h1 { color: var(--mj-gold); text-shadow: 2px 2px 8px #000; margin-top: 40px; font-size: 1.8rem; }
         .desc { font-size: 0.9rem; margin-bottom: 25px; opacity: 0.8; }
@@ -107,10 +88,6 @@
             padding: 16px 60px; font-size: 1.1rem; border-radius: 40px; cursor: pointer; 
             font-weight: bold; margin-top: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.4);
         }
-        /* 强制所有元素使用界面1的像素字体，!important 确保覆盖原有字体 */
-* {
-    font-family: 'ZCOOL KuaiLe', cursive !important;
-}
     </style>
 </head>
 <body>
@@ -125,7 +102,7 @@
     </div>
 
     <h1>麻将不要做</h1>
-    <p class="desc">记录已自动存档</p>
+    <p class="desc" id="roleNotice">记录已自动存档</p>
 
     <div class="grid" id="gameBoard"></div>
     <button class="shuffle-btn" onclick="confirmShuffle()">重新洗牌</button>
@@ -134,8 +111,16 @@
     <script>
         let gameData = { conditions: [], punishments: [] };
         let currentSession = [];
+        
+        // 解析网址传来的参数
+        const params = new URLSearchParams(window.location.search);
+        const myRole = parseInt(params.get('role')) || 0; // 你选的玩家号
+        const myRoom = params.get('room') || "未知";
 
         async function init() {
+            if(myRole > 0) {
+                document.getElementById('roleNotice').innerText = `房间: ${myRoom} | 你是玩家 ${myRole} (仅能看自己的牌)`;
+            }
             try {
                 const res = await fetch('./data.json?t=' + Date.now());
                 const json = await res.json();
@@ -162,7 +147,6 @@
             }
         }
 
-        // 将当前局存入历史
         function archiveCurrentSession() {
             if (currentSession.length === 0) return;
             let history = JSON.parse(localStorage.getItem('mj_history') || "[]");
@@ -170,8 +154,8 @@
                 time: new Date().toLocaleString(),
                 details: currentSession.map(s => `玩家${s.playerIdx}: ${s.condition}`)
             };
-            history.unshift(record); // 插到开头
-            history = history.slice(0, 10); // 只保留最近10条
+            history.unshift(record);
+            history = history.slice(0, 10);
             localStorage.setItem('mj_history', JSON.stringify(history));
         }
 
@@ -231,10 +215,17 @@
                 container.className = "card-container";
                 const card = document.createElement('div');
                 card.className = "card" + (item.isFlipped ? " flipped" : "");
+                
+                // 核心修改：只能点击属于自己的玩家卡牌
                 card.onclick = function() { 
+                    if (myRole > 0 && item.playerIdx !== myRole) {
+                        alert(`不可以偷看！你是玩家 ${myRole}，这是玩家 ${item.playerIdx} 的牌。`);
+                        return;
+                    }
                     item.isFlipped = this.classList.toggle('flipped'); 
                     saveSession();
                 };
+
                 card.innerHTML = `
                     <div class="card-face card-back p${item.playerIdx}-back">
                         <div class="char-icon" style="background-image: url('./character${item.playerIdx}.png')"></div>
