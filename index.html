@@ -151,7 +151,7 @@
         }
 
         function confirmShuffle() {
-            if (confirm("洗牌后，当前这一局的内容将存入历史记录。确定吗？")) {
+            if (confirm("确定重新洗牌吗？这会直接开始下一局！")) {
                 archiveCurrentSession();
                 shuffle();
             }
