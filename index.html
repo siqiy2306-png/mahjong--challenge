@@ -15,7 +15,7 @@
         }
 
         .header-panel {
-            margin-top: 15%; /* 使用百分比适配不同高度的手机 */
+            margin-top: 15%;
             background: #e6b06e; border: 5px solid #5d3a1a;
             padding: 15px 30px; position: relative;
             box-shadow: inset -3px -3px 0px #9d6d3d, inset 3px 3px 0px #f5d6a8;
@@ -25,7 +25,6 @@
 
         .room-section { margin-top: 30px; background: #fff8e7; border: 4px solid #5d3a1a; padding: 5px; }
 
-        /* 优化手机端输入框 */
         .room-input { 
             width: 180px; height: 45px; background: transparent; border: none;
             text-align: center; font-size: 22px; font-family: 'ZCOOL KuaiLe'; outline: none;
@@ -33,7 +32,7 @@
 
         .role-grid { 
             display: grid; grid-template-columns: 1fr 1fr; 
-            gap: 15px; margin-top: 40px; width: 90%; /* 宽度占手机 90% */
+            gap: 15px; margin-top: 40px; width: 90%;
         }
 
         .role-btn { 
@@ -49,7 +48,7 @@
 <body>
     <div class="header-panel"><h1 class="title">麻将不要做</h1></div>
     <div class="room-section">
-        <input type="number" id="roomInput" class="room-input" placeholder="输入4位房号" pattern="\d*">
+        <input type="number" id="roomInput" class="room-input" placeholder="输入3-5位房号" oninput="if(value.length>5)value=value.slice(0,5)">
     </div>
     <div class="role-grid">
         <div class="role-btn" onclick="go(1)">玩家 1</div>
@@ -60,7 +59,11 @@
     <script>
         function go(role) {
             const room = document.getElementById('roomInput').value;
-            if(!room) { alert("请先输入房号哦！"); return; }
+            // 修改点 2: 判断逻辑改为 3-5 位
+            if(room.length < 3 || room.length > 5) { 
+                alert("请输入 3 到 5 位数的房号哦！"); 
+                return; 
+            }
             window.location.href = `game.html?room=${room}&role=${role}`;
         }
     </script>
