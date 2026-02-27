@@ -2,128 +2,65 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>麻将不要做 - 登录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>登录 - 星露谷风格</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
         body { 
-            margin: 0; 
-            background: #4a90e2; /* 星露谷的天空蓝 */
-            background-image: linear-gradient(to bottom, #4a90e2, #87ceeb);
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            font-family: 'ZCOOL KuaiLe', cursive; /* 接近星露谷的中文字体 */
-            height: 100vh;
-            overflow: hidden;
+            margin: 0; padding: 0;
+            background: linear-gradient(to bottom, #4a90e2, #87ceeb);
+            display: flex; flex-direction: column; align-items: center;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            min-height: 100vh; width: 100vw; overflow-x: hidden;
         }
 
-        /* 木质主标题面板 */
         .header-panel {
-            margin-top: 60px;
-            background: #e6b06e; /* 木头原色 */
-            border: 6px solid #5d3a1a; /* 深木色边框 */
-            box-shadow: inset -4px -4px 0px #9d6d3d, inset 4px 4px 0px #f5d6a8;
-            padding: 20px 40px;
-            position: relative;
+            margin-top: 15%; /* 使用百分比适配不同高度的手机 */
+            background: #e6b06e; border: 5px solid #5d3a1a;
+            padding: 15px 30px; position: relative;
+            box-shadow: inset -3px -3px 0px #9d6d3d, inset 3px 3px 0px #f5d6a8;
         }
 
-        .title { 
-            font-size: 48px; 
-            color: #5d3a1a; 
-            text-shadow: 2px 2px #f5d6a8;
-            margin: 0;
-        }
+        .title { font-size: 36px; color: #5d3a1a; margin: 0; text-shadow: 2px 2px #f5d6a8; }
 
-        /* 房号输入框：星露谷对话框风格 */
-        .room-section {
-            margin-top: 50px;
-            background: #fff8e7;
-            border: 4px solid #5d3a1a;
-            padding: 10px;
-            border-radius: 4px;
-        }
+        .room-section { margin-top: 30px; background: #fff8e7; border: 4px solid #5d3a1a; padding: 5px; }
 
+        /* 优化手机端输入框 */
         .room-input { 
-            width: 200px; 
-            height: 40px; 
-            background: transparent;
-            border: none;
-            text-align: center; 
-            font-size: 24px; 
-            font-family: 'ZCOOL KuaiLe';
-            color: #5d3a1a;
-            outline: none;
+            width: 180px; height: 45px; background: transparent; border: none;
+            text-align: center; font-size: 22px; font-family: 'ZCOOL KuaiLe'; outline: none;
         }
 
-        /* 角色按钮矩阵：100% 还原图 3 下方小方块 */
         .role-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 25px; 
-            margin-top: 40px;
+            display: grid; grid-template-columns: 1fr 1fr; 
+            gap: 15px; margin-top: 40px; width: 90%; /* 宽度占手机 90% */
         }
 
         .role-btn { 
-            width: 140px;
-            height: 100px;
-            background: #e6b06e; 
-            border: 4px solid #5d3a1a;
+            height: 90px; background: #e6b06e; border: 4px solid #5d3a1a;
             box-shadow: inset -4px -4px 0px #9d6d3d, inset 4px 4px 0px #f5d6a8;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: #5d3a1a;
-            transition: all 0.1s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #5d3a1a; cursor: pointer;
         }
 
-        /* 悬停与点击时的星露谷式反馈 */
-        .role-btn:hover {
-            transform: translateY(-5px);
-            background: #f5d6a8;
-        }
-
-        .role-btn:active {
-            transform: translateY(2px);
-            box-shadow: inset 4px 4px 0px #9d6d3d;
-        }
-
-        /* 装饰用的小叶子 */
-        .leaf {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #4caf50;
-            border: 3px solid #1b5e20;
-            border-radius: 0 100% 0 100%;
-            top: -15px;
-            right: -15px;
-            transform: rotate(15deg);
-        }
+        .role-btn:active { transform: scale(0.95); box-shadow: inset 4px 4px 0px #9d6d3d; }
     </style>
 </head>
 <body>
-    <div class="header-panel">
-        <div class="leaf"></div>
-        <h1 class="title">麻将不要做</h1>
-    </div>
-
+    <div class="header-panel"><h1 class="title">麻将不要做</h1></div>
     <div class="room-section">
-        <input type="number" id="roomInput" class="room-input" placeholder="输入房号">
+        <input type="number" id="roomInput" class="room-input" placeholder="输入4位房号" pattern="\d*">
     </div>
-
     <div class="role-grid">
         <div class="role-btn" onclick="go(1)">玩家 1</div>
         <div class="role-btn" onclick="go(2)">玩家 2</div>
         <div class="role-btn" onclick="go(3)">玩家 3</div>
         <div class="role-btn" onclick="go(4)">玩家 4</div>
     </div>
-
     <script>
         function go(role) {
             const room = document.getElementById('roomInput').value;
-            if(!room) return alert("请先输入房号哦！");
+            if(!room) { alert("请先输入房号哦！"); return; }
             window.location.href = `game.html?room=${room}&role=${role}`;
         }
     </script>
